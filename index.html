@@ -4,10 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Homework</title>
+    <title>Formular</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <form class="formular">
+      
+       <p ><input type="text" name="name" placeholder="First Name"  class="js-required" > </p> 
+       <p><input type="text" name="name" placeholder="Last Name" class="js-required"> </p> 
+
+       <p>
+           Gender : <br>
+        <label ><input type="radio" name="gender" value="M">M</label> <br>
+        <label><input type="radio" name="gender" value="F">F</label>  <br>
+        </p> 
+
+       <p><textarea name="message"  cols="30" rows="10"class="js-required">Your message here...</textarea> </p> 
+
+        <p class="buton"><button type="submit" > Submit </button> </p>  
+
+       <p class = "image"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS6QiV_32Gpr8AofkpSRWlGAL3XKx2_dtOWwDuYhW4acv614Cas&s" alt="happy"></p>
+        
+        </form>
     
-    <script src="main.js"></script>
+
+
+
+    <script src="form.js"></script>
 </body>
 </html>

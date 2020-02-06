@@ -1,69 +1,113 @@
-// ex1.
-for(let i = 1; i < 21 ; i++){
-    console.log(i);
-} 
+document.querySelector('form').addEventListener('submit', handleSubmit);
 
 
-// ex 2.
- for(let i = 1; i<21 ; i++) {
-    if(i % 2) {
-        console.log(i);
-    }
-} 
- 
-
-// ex 3
+function handleSubmit(e) {
+  const reqFields = document.querySelectorAll('.js-required');
+  const radios = document.querySelectorAll('[name=gender]');
   
-function sumOfArray(array){
-    let sum = 0 ;
-    
-    for(let i = 0; i < array.lenght ; i++ ){
-        sum = sum + array[i]  ;
-       
-    }
-    
-return sum;
-  
-}
-  
-console.log(sumOfArray([1, 3, 5, 1]));
 
-// ex 4
-function maxOfArray(array) {
-    let i = 0;
-    let max = -Infinity;
+
+  for(let i = 0; i < reqFields.length; i++) {
+    const field = reqFields[i];
+
     
-    while(i < array.length) {
-      if (max < array[i]) {
-        max = array[i];
-      }
-      
-      i++;
+    if(field.value === '') {
+      const errorMessage = showErrorMessage('Please complete the field' + field.name + '!');
+
+      console.warn('Not completed field with name: ', field.name);
+      field.style.border = '1px solid #c00';
+      field.addEventListener(
+        'change', 
+        () => {
+          removeErrorState(field);
+          hideErrorMessage(errorMessage);
+        }, 
+        { once: true }
+      );
+      e.preventDefault();
     }
-    
-    return max;
   }
   
-  console.log(maxOfArray([4, 15, -20, -1]));
 
+  if(!radios[0].checked && !radios[1].checked) {
+    const parent = radios[0].parentElement.parentElement;
+    parent.style.border = '1px solid #c00';
+    
+    const errorMessage = showErrorMessage('Please choose a gender');
 
-// ex 5
+    radios[0].addEventListener('change', () => {
+      removeErrorState(parent);
+      hideErrorMessage(errorMessage);
+    });
+    radios[1].addEventListener('change', () => {
+      removeErrorState(parent);
+      hideErrorMessage(errorMessage);
+    });
+    console.warn('was not chosen gender');
+    e.preventDefault();
+  }
 
-function ElementsOfArray (array , value) {
-    let n = 0 ;
-
-    for(let i = 0 ; i <  array.lenght ; i++) {
-        if(array[i] == value) {
-            n++ ;
-        }
-    }
-    return n;
+  console.log(reqFields);
 }
-console.log(ElementsOfArray([1,2,3,1,2,1] , 1 ))
-   
 
-// ex Expert Challenge:
+function removeErrorState(elem) {
+  elem.style.border = '1px solid #afafaf'
+}
 
+function hideErrorMessage(messageRef) {
+  messageRef.remove();
+  }
 
-
+function showErrorMessage(message) {
+  const i = document.createElement('i');
+  i.classList.add('fas','fa-exclamation-triangle');
   
+  const p = document.createElement('p');
+  p.classList.add('error-message') ;
+  p.innerHTML = 'You have not completed all fields';
+  
+  const form = document.querySelector('form');
+  
+
+  p.prepend(i);
+  form.prepend(p);
+
+  return p;
+}
+
+function showSuccessMessage(message) {
+  if(document.location.search === '') {
+    return;
+  }
+const perechi = window.location.search.split('&'); 
+for(let i = 0; i < perechi.length; i++) {
+  const pereche = perechi[i];
+  const fields = pereche.split('=');
+  if(pereche.includes('name=')) {
+    user = fields[1];
+  }
+  console.log(fields[0], '=', fields[1]);
+}
+
+  const i = document.createElement('i');
+  i.classList.add('fas','fa-checked');
+
+  const p = document.createElement('p');
+   p.classList.add('success-message');
+   p.innerHTML = 'Thank you for contacting us , ' + user ;
+
+  const form = document.querySelector('form');
+
+  p.prepend(i);
+  form.prepend(p);
+
+ 
+  }
+
+
+
+window.addEventListener('DOMContentLoaded', showSuccessMessage);
+window.addEventListener('DOMContentLoaded', () => console.log('DOM Loaded'));
+
+
+window.addEventListener('load', () => console.log('Load'))
