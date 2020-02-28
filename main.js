@@ -1,113 +1,99 @@
-document.querySelector('form').addEventListener('submit', handleSubmit);
+const url = 'https://games-world.herokuapp.com/games';
 
+(async function() {
+   
+    const games = await fetch(url) 
+                    .then(res => res.json())
+                    .catch(err => console.warn('The url is not correct', err))
+    displayGames(games);
+    attachEventListeners();
+   
+})();
+function displayGames(games){
+    const fragment = document.createDocumentFragment();
 
-function handleSubmit(e) {
-  const reqFields = document.querySelectorAll('.js-required');
-  const radios = document.querySelectorAll('[name=gender]');
-  
-
-
-  for(let i = 0; i < reqFields.length; i++) {
-    const field = reqFields[i];
-
-    
-    if(field.value === '') {
-      const errorMessage = showErrorMessage('Please complete the field' + field.name + '!');
-
-      console.warn('Not completed field with name: ', field.name);
-      field.style.border = '1px solid #c00';
-      field.addEventListener(
-        'change', 
-        () => {
-          removeErrorState(field);
-          hideErrorMessage(errorMessage);
-        }, 
-        { once: true }
-      );
-      e.preventDefault();
+    for(const game of games){
+        const gameHtml = createHtml(game);
+        fragment.append(gameHtml);
     }
-  }
-  
+    document.body.append(fragment);
+}
 
-  if(!radios[0].checked && !radios[1].checked) {
-    const parent = radios[0].parentElement.parentElement;
-    parent.style.border = '1px solid #c00';
+function createHtml(game){
+    const wrapper = document.createElement('section')
+
+    const title = document.createElement('h2');
+    title.innerHTML = game.title ;
+
+    const img = document.createElement('img');
+    img.src = game.imageUrl;
+            
+    const description = document.createElement('div');
+    description.innerHTML = game.description;
+
+    const editBtn = document.createElement('button');
+    editBtn.innerHTML = 'Edit Game';
+    editBtn.classList.add('js-edit-button');
+    editBtn.setAttribute('data-game-id', game.id);
+
+    const deleteBtn = document.createElement('button');
+    deleteBtn.innerHTML = 'Delete';
+    deleteBtn.classList.add('js-delete-button');
+    deleteBtn.setAttribute('data-game-id', game.id);
+
+    wrapper.append(title, img, description, editBtn, deleteBtn);
+
+    return wrapper      
+  
+}
+
+
+
+function attachEventListeners() {
     
-    const errorMessage = showErrorMessage('Please choose a gender');
+    document.addEventListener('click', handleClick);
 
-    radios[0].addEventListener('change', () => {
-      removeErrorState(parent);
-      hideErrorMessage(errorMessage);
+    function handleClick(e) {
+       
+        const gameId = e.target.getAttribute('data-game-id');
+        
+        if(e.target.classList.contains('js-edit-button')) {
+            handleEdit(gameId);
+        } else if(e.target.classList.contains('js-delete-button')) {
+            handleDelete(gameId);
+        }
+    }
+}
+
+function handleEdit(id) {
+    fetch(`${url}/${id}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: 'title=Test Joc & description = Super Joc'
+    })
+    .then(res => res.json())
+    .then(console.log)
+}
+
+function handleDelete(id) {
+    fetch(`${url}/${id}`, {
+        method: 'DELETE'
+    })
+    .then(res => res.json())
+    .then(console.log);
+
+}  
+function createGame(game) {
+    axios(`https://games-world.herokuapp.com/games`, {
+        method: 'POST',
+        data:'title = Call of Duty®: WWII Returned && imageUrl = https://psmedia.playstation.com/is/image/psmedia/call-of-duty-wwii-two-column-01-ps4-eu-19apr17?$TwoColumn_Image$',
+        headers: {
+           'Content-Type' :  'application/x-www-form-urlencoded'
+        }
     });
-    radios[1].addEventListener('change', () => {
-      removeErrorState(parent);
-      hideErrorMessage(errorMessage);
-    });
-    console.warn('was not chosen gender');
-    e.preventDefault();
-  }
-
-  console.log(reqFields);
 }
 
-function removeErrorState(elem) {
-  elem.style.border = '1px solid #afafaf'
-}
-
-function hideErrorMessage(messageRef) {
-  messageRef.remove();
-  }
-
-function showErrorMessage(message) {
-  const i = document.createElement('i');
-  i.classList.add('fas','fa-exclamation-triangle');
-  
-  const p = document.createElement('p');
-  p.classList.add('error-message') ;
-  p.innerHTML = 'You have not completed all fields';
-  
-  const form = document.querySelector('form');
-  
-
-  p.prepend(i);
-  form.prepend(p);
-
-  return p;
-}
-
-function showSuccessMessage(message) {
-  if(document.location.search === '') {
-    return;
-  }
-const perechi = window.location.search.split('&'); 
-for(let i = 0; i < perechi.length; i++) {
-  const pereche = perechi[i];
-  const fields = pereche.split('=');
-  if(pereche.includes('name=')) {
-    user = fields[1];
-  }
-  console.log(fields[0], '=', fields[1]);
-}
-
-  const i = document.createElement('i');
-  i.classList.add('fas','fa-checked');
-
-  const p = document.createElement('p');
-   p.classList.add('success-message');
-   p.innerHTML = 'Thank you for contacting us , ' + user ;
-
-  const form = document.querySelector('form');
-
-  p.prepend(i);
-  form.prepend(p);
-
- 
-  }
-
-
-
-window.addEventListener('DOMContentLoaded', showSuccessMessage);
-window.addEventListener('DOMContentLoaded', () => console.log('DOM Loaded'));
-
-
-window.addEventListener('load', () => console.log('Load'))
+document.querySelector('[data-andGame]').addEventListener('click', createGame)
+    
